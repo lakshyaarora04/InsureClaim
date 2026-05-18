@@ -27,7 +27,7 @@ def embed_chunks(chunks, fit_vectorizer=False):
             stop_words='english',
             ngram_range=(1, 2),
             min_df=1,
-            max_df=0.9
+            max_df=1.0
         )
         embeddings = vectorizer.fit_transform(chunks)
         is_fitted = True

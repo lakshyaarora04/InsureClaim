@@ -219,7 +219,7 @@ WAITING PERIOD CHECK: Policy conditions not met"""
             "decision": decision,
             "justification": justification,
             "amount": amount,
-            "retrieved_chunks": len(chunks),
+            "retrieved_chunks": chunks,
             "reasoning_breakdown": reasoning_breakdown,
             "reasoning_tree": reasoning_json,
             "confidence_score": reasoning_tree.confidence_score
@@ -240,7 +240,7 @@ WAITING PERIOD CHECK: Policy conditions not met"""
             "decision": "rejected",
             "justification": f"Error in LLM processing: {str(e)}. No relevant policy clause found.",
             "amount": 0,
-            "retrieved_chunks": len(chunks),
+            "retrieved_chunks": chunks,
             "reasoning_breakdown": reasoning_breakdown,
             "reasoning_tree": reasoning_json,
             "confidence_score": reasoning_tree.confidence_score

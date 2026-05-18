@@ -9,7 +9,7 @@ import json
 import time
 import random
 
-WEBHOOK_URL = "https://21bfed7abe7d.ngrok-free.app/webhook/query"
+WEBHOOK_URL = "http://localhost:8001/webhook/query"
 
 def create_realistic_test_cases():
     """Create realistic insurance claim test cases with expected outcomes"""
