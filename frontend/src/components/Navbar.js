@@ -69,8 +69,8 @@ const Navbar = () => {
                 <Brain className="h-5 w-5 text-white" />
               </div>
               <div className="leading-none">
-                <p className="text-sm font-bold text-white tracking-tight">InsureAI</p>
-                <p className="text-xs" style={{ color: '#64748b' }}>Claim Analyzer</p>
+                <p className="text-sm font-bold text-white tracking-tight">InsureClaims</p>
+                <p className="text-xs" style={{ color: '#64748b' }}>AI Claim Evaluation</p>
               </div>
             </Link>
 

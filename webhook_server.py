@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Webhook Server for Insurance Claim Evaluation
-Receives and processes insurance claim evaluation requests from HackRx
+Receives and processes insurance claim evaluation requests for InsureClaims
 """
 
 import uvicorn
@@ -225,7 +225,7 @@ async def webhook_query(request: Request):
         raise HTTPException(status_code=500, detail=str(e))
 
 async def handle_document_qa(payload: dict) -> dict:
-    """Handle document-based Q&A requests from HackRx"""
+    """Handle document-based Q&A requests from external consumers"""
     documents = payload.get("documents", "")
     questions = payload.get("questions", [])
     

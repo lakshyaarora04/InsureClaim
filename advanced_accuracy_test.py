@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Advanced Accuracy Test for Insurance Claim Evaluation
-Tests with realistic scenarios to ensure 90+% accuracy for HackRx
+Tests with realistic scenarios to ensure 90+% accuracy in production
 """
 
 import requests
@@ -317,18 +317,18 @@ def test_accuracy():
         if not result["decision_correct"] and "error" in result:
             print(f"      Error: {result['error']}")
     
-    # HackRx readiness assessment
+    # Production readiness assessment
     print("\n" + "=" * 70)
-    print("🎯 HACKRX READINESS ASSESSMENT")
+    print("🎯 PRODUCTION ACCURACY ASSESSMENT")
     print("=" * 70)
     
     if overall_accuracy >= 90:
-        print("🎉 EXCELLENT! Your webhook is ready for 90+% accuracy in HackRx!")
+        print("🎉 EXCELLENT! Your webhook is ready for 90+% accuracy in production!")
         print("✅ Decision accuracy is strong")
         print("✅ Confidence scoring is reliable")
         print("✅ Coverage calculations are appropriate")
     elif overall_accuracy >= 80:
-        print("👍 GOOD! Your webhook should perform well in HackRx")
+        print("👍 GOOD! Your webhook should perform well in production")
         print("⚠️  Consider fine-tuning for better accuracy")
     elif overall_accuracy >= 70:
         print("⚠️  ACCEPTABLE! Your webhook needs improvement for high accuracy")
@@ -338,7 +338,7 @@ def test_accuracy():
         print("🔧 Review and fix the business logic")
     
     print(f"\n🌐 Webhook URL: {WEBHOOK_URL}")
-    print(f"📊 Predicted HackRx Accuracy: {overall_accuracy:.1f}%")
+    print(f"📊 Predicted Pipeline Accuracy: {overall_accuracy:.1f}%")
     
     return overall_accuracy >= 90
 
@@ -347,9 +347,9 @@ def main():
     success = test_accuracy()
     
     if success:
-        print("\n✅ RECOMMENDATION: Submit to HackRx - Ready for 90+% accuracy!")
+        print("\n✅ RECOMMENDATION: Production Ready - 90+% accuracy achieved!")
     else:
-        print("\n⚠️  RECOMMENDATION: Improve accuracy before submitting to HackRx")
+        print("\n⚠️  RECOMMENDATION: Improve accuracy before production deployment")
 
 if __name__ == "__main__":
     main()

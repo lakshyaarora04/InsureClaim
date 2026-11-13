@@ -7,9 +7,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from backend.api.routes import router
 
 app = FastAPI(
-    title="LLM Insurance Claim Evaluation System",
-    description="AI-powered system for evaluating insurance claims using LLM reasoning",
-    version="1.0.0"
+    title="InsureClaims",
+    description="AI-powered system for evaluating insurance claims using LangChain RAG & LLM reasoning",
+    version="2.0.0"
 )
 
 app.add_middleware(
@@ -25,14 +25,18 @@ app.include_router(router)
 @app.get("/")
 def root():
     return {
-        "message": "LLM Insurance Claim Evaluation System is running",
+        "message": "InsureClaims Engine is running",
         "docs": "/docs",
         "endpoints": {
             "query": "/query/",
-            "health": "/"
+            "health": "/",
+            "analyze": "/api/analyze",
+            "stats": "/api/stats",
+            "relational_context": "/api/claim/context/{claim_id}",
+            "claimant_history": "/api/claimant/history/{claimant_id}"
         }
     }
 
 @app.get("/health")
 def health_check():
-    return {"status": "healthy", "system": "LLM Insurance Claim Evaluator"}
+    return {"status": "healthy", "system": "InsureClaims Engine v2.0"}

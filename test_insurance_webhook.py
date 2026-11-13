@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Test Insurance Claim Evaluation Webhook
-Comprehensive testing of the webhook endpoint for HackRx competition
+Comprehensive testing of the webhook endpoint for InsureClaims pipeline
 """
 
 import requests
@@ -248,11 +248,11 @@ def main():
     print(f"\n🎉 OVERALL RESULT: {'✅ ALL TESTS PASSED' if overall_success else '❌ SOME TESTS FAILED'}")
     
     if overall_success:
-        print("\n✅ Your webhook is ready for HackRx competition!")
+        print("\n✅ Your webhook is ready for production evaluation pipeline!")
         print(f"🌐 Webhook URL: {WEBHOOK_URL}")
-        print("📝 Submit this URL to the HackRx dashboard")
+        print("📝 Configure this URL in your webhook client dashboard")
     else:
-        print("\n❌ Please fix the failing tests before submitting to HackRx")
+        print("\n❌ Please fix the failing tests before production deployment")
 
 if __name__ == "__main__":
     main()

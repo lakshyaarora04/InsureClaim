@@ -162,7 +162,7 @@ python -m pytest tests/test_webhook_server.py
 python -m pytest --cov=backend --cov-report=html
 
 # Run performance tests
-python test_hackrx_accuracy.py
+python advanced_accuracy_test.py
 ```
 
 ### **Writing Tests**

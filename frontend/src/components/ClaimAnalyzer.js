@@ -145,18 +145,18 @@ const ClaimAnalyzer = () => {
             color: '#818cf8',
           }}>
           <Sparkles className="h-3.5 w-3.5" />
-          Powered by LLM + RAG Pipeline
+          InsureClaims • LangChain RAG & LLM Engine
         </div>
 
         <h1 className="text-5xl font-black mb-4 leading-tight">
-          <span className="gradient-text">AI-Powered</span>{' '}
-          <span style={{ color: '#f1f5f9' }}>Insurance</span>
+          <span className="gradient-text">InsureClaims</span>{' '}
+          <span style={{ color: '#f1f5f9' }}>AI</span>
           <br />
-          <span style={{ color: '#f1f5f9' }}>Claim Analyzer</span>
+          <span style={{ color: '#f1f5f9' }}>Claim Evaluation</span>
         </h1>
         <p className="text-lg max-w-2xl mx-auto" style={{ color: '#64748b' }}>
-          Submit a claim description in plain English. Our AI evaluates it against
-          uploaded policy documents using semantic retrieval + LLM reasoning.
+          Submit an insurance claim inquiry. Our LangChain RAG pipeline evaluates policy
+          clauses, waiting periods, and exclusions with explainable reasoning trees.
         </p>
 
         {/* Stat pills */}

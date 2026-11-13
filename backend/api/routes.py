@@ -5,6 +5,8 @@ from backend.utils.chunker import chunk_text
 from backend.retriever.embedder import embed_chunks, embed_query
 from backend.retriever.vector_store import VectorStore
 from backend.decision_engine.evaluator import evaluate_claim
+from backend.retriever.langchain_rag import LangChainInsuranceRAG
+from backend.database.db_manager import db_manager
 from backend.api.models import Query
 import os
 import json
@@ -180,11 +182,9 @@ async def handle_query(query: Query):
     store = uploaded_files[file_id]["vector_store"]
     chunks = uploaded_files[file_id]["chunks"]
 
-    query_vector = embed_query(query.procedure)
-    results = store.search(query_vector, top_k=8)
-
     start = time.time()
-    result = evaluate_claim(query.dict(), results)
+    rag_engine = LangChainInsuranceRAG(vector_store=store)
+    result = rag_engine.evaluate_claim(query.dict())
     elapsed_ms = int((time.time() - start) * 1000)
 
     # Persist to audit_reports
@@ -210,6 +210,30 @@ async def handle_query(query: Query):
         conn.commit()
     finally:
         conn.close()
+
+    # Also persist to Normalized Relational Database (3NF) with referential integrity
+    try:
+        db_manager.save_complete_claim_record(
+            claimant_data={
+                "name": f"Patient {report_id[:6].upper()}",
+                "age": query.age or 35,
+                "gender": query.gender or "male",
+                "city": query.location or "Mumbai",
+            },
+            policy_data={
+                "duration_months": query.policy_duration_months or 12,
+            },
+            claim_data={
+                "id": report_id,
+                "procedure": query.procedure or "General Claim",
+                "location": query.location or "Mumbai",
+                "claim_amount": result.get("amount", 50000.0) or 50000.0,
+                "file_id": file_id,
+            },
+            evaluation_data=result,
+        )
+    except Exception as db_err:
+        print(f"⚠️ Warning saving to normalized DB: {db_err}")
 
     # Update in-memory analytics
     _analytics["total_queries"] += 1
@@ -522,5 +546,28 @@ async def api_stats():
         "total_queries": _analytics["total_queries"],
         "accuracy_rate": 0.968,
         "avg_response_time_ms": 1250,
-        "system": "LLM Insurance Claim Evaluator v2.0",
+        "system": "InsureClaims Engine v2.0",
     }
+
+
+# ─── Multi-Join Relational Query Endpoints ────────────────────────────────────
+
+@router.get("/api/claim/context/{claim_id}")
+async def get_claim_relational_context(claim_id: str):
+    """
+    Multi-join query spanning 4 normalized tables (claims, policies, claimants, evaluations).
+    """
+    context = db_manager.get_complete_claim_context(claim_id)
+    if not context:
+        raise HTTPException(status_code=404, detail=f"Claim {claim_id} not found in normalized database.")
+    return context
+
+
+@router.get("/api/claimant/history/{claimant_id}")
+async def get_claimant_relational_history(claimant_id: str):
+    """
+    Multi-join query retrieving full claims, policies, and decision history for a claimant.
+    """
+    history = db_manager.get_claimant_history_with_joins(claimant_id)
+    return {"claimant_id": claimant_id, "total_records": len(history), "history": history}
+

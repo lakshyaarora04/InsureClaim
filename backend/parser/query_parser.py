@@ -134,7 +134,7 @@ class NaturalLanguageQueryParser:
         
         try:
             response = self.client.chat.completions.create(
-                model="gpt-3.5-turbo",
+                model="gpt-4o-mini",
                 messages=[{"role": "user", "content": prompt}],
                 max_tokens=200,
                 temperature=0.1
