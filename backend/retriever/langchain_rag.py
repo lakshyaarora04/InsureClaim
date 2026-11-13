@@ -205,7 +205,9 @@ class LangChainInsuranceRAG:
         if api_key:
             try:
                 from openai import OpenAI
-                client = OpenAI(api_key=api_key)
+                base_url = os.getenv("OPENAI_BASE_URL")
+                client = OpenAI(api_key=api_key, base_url=base_url) if base_url else OpenAI(api_key=api_key)
+                model_name = os.getenv("LLM_MODEL", "gpt-4o-mini")
 
                 prompt_rendered = self.prompt.format(
                     age=claim_data.get("age", 35),
@@ -218,7 +220,7 @@ class LangChainInsuranceRAG:
                 )
 
                 response = client.chat.completions.create(
-                    model="gpt-4o-mini",
+                    model=model_name,
                     messages=[{"role": "user", "content": prompt_rendered}],
                     max_tokens=600,
                     temperature=0.1,

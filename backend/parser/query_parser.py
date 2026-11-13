@@ -18,7 +18,9 @@ class NaturalLanguageQueryParser:
         self.api_key = os.getenv('OPENAI_API_KEY')
         if not self.api_key:
             raise ValueError("OPENAI_API_KEY environment variable not set")
-        self.client = OpenAI(api_key=self.api_key)
+        base_url = os.getenv('OPENAI_BASE_URL')
+        self.client = OpenAI(api_key=self.api_key, base_url=base_url) if base_url else OpenAI(api_key=self.api_key)
+        self.model = os.getenv('LLM_MODEL', 'gpt-4o-mini')
         
         # Common medical procedures and their variations
         self.procedure_patterns = {
@@ -134,7 +136,7 @@ class NaturalLanguageQueryParser:
         
         try:
             response = self.client.chat.completions.create(
-                model="gpt-4o-mini",
+                model=self.model,
                 messages=[{"role": "user", "content": prompt}],
                 max_tokens=200,
                 temperature=0.1

@@ -162,13 +162,15 @@ def call_llm(query_data, clauses):
         if not api_key:
             return _rule_based_decision(query_data, clauses)
         
-        # Initialize OpenAI client with new API format
-        client = OpenAI(api_key=api_key)
+        # Initialize OpenAI client with optional custom base URL (e.g. Groq, Gemini)
+        base_url = os.getenv("OPENAI_BASE_URL")
+        client = OpenAI(api_key=api_key, base_url=base_url) if base_url else OpenAI(api_key=api_key)
+        model_name = os.getenv("LLM_MODEL", "gpt-4o-mini")
         print("🔍 DEBUG: OpenAI client initialized successfully")
         
-        print("🔍 DEBUG: Making OpenAI API call...")
+        print(f"🔍 DEBUG: Making LLM API call using {model_name}...")
         response = client.chat.completions.create(
-            model="gpt-4o-mini",
+            model=model_name,
             messages=[{"role": "user", "content": prompt}],
             max_tokens=1500,  # Increased for better justifications
             temperature=0.1
