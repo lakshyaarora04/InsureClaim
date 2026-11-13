@@ -9,7 +9,7 @@
     "api/index.py": {
       "maxDuration": 60,
       "memory": 1024,
-      "includeFiles": "documents/**"
+      "includeFiles": "{documents/**,backend/database/schema.sql}"
     }
   },
   "rewrites": [

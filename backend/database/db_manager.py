@@ -62,8 +62,39 @@ class DatabaseManager:
         """Execute DDL statements to set up normalized 3NF tables."""
         conn = self.get_connection()
         try:
-            with open(SCHEMA_FILE, "r", encoding="utf-8") as f:
-                ddl = f.read()
+            if SCHEMA_FILE.exists():
+                with open(SCHEMA_FILE, "r", encoding="utf-8") as f:
+                    ddl = f.read()
+            else:
+                ddl = """
+                CREATE TABLE IF NOT EXISTS claimants (
+                    id VARCHAR(36) PRIMARY KEY, full_name VARCHAR(100) NOT NULL, age INT NOT NULL,
+                    gender VARCHAR(10) NOT NULL, contact VARCHAR(50), city VARCHAR(50), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                );
+                CREATE TABLE IF NOT EXISTS policies (
+                    id VARCHAR(36) PRIMARY KEY, claimant_id VARCHAR(36) NOT NULL, policy_number VARCHAR(50) UNIQUE NOT NULL,
+                    plan_name VARCHAR(100) NOT NULL, duration_months INT NOT NULL, max_coverage_amount DECIMAL(12, 2) NOT NULL,
+                    status VARCHAR(20) DEFAULT 'ACTIVE', created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (claimant_id) REFERENCES claimants(id) ON DELETE CASCADE
+                );
+                CREATE TABLE IF NOT EXISTS claims (
+                    id VARCHAR(36) PRIMARY KEY, policy_id VARCHAR(36) NOT NULL, procedure_name VARCHAR(150) NOT NULL,
+                    hospital_location VARCHAR(100), claimed_amount DECIMAL(12, 2) NOT NULL, file_id VARCHAR(64),
+                    status VARCHAR(20) DEFAULT 'PENDING', created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (policy_id) REFERENCES policies(id) ON DELETE CASCADE
+                );
+                CREATE TABLE IF NOT EXISTS evaluations (
+                    id VARCHAR(36) PRIMARY KEY, claim_id VARCHAR(36) NOT NULL, decision VARCHAR(20) NOT NULL,
+                    approved_amount DECIMAL(12, 2) NOT NULL, confidence_score DECIMAL(5, 4) NOT NULL,
+                    justification TEXT, retrieved_clauses TEXT, reasoning_tree TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (claim_id) REFERENCES claims(id) ON DELETE CASCADE
+                );
+                CREATE TABLE IF NOT EXISTS audit_logs (
+                    id VARCHAR(36) PRIMARY KEY, evaluation_id VARCHAR(36) NOT NULL, action VARCHAR(50) NOT NULL,
+                    performed_by VARCHAR(50) DEFAULT 'SYSTEM', notes TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (evaluation_id) REFERENCES evaluations(id) ON DELETE CASCADE
+                );
+                """
 
             cursor = conn.cursor()
             # Split and execute individual statements
