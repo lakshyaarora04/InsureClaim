@@ -14,11 +14,12 @@ import {
 } from 'lucide-react';
 
 const navItems = [
-  { path: '/',          label: 'Analyzer',   icon: Search      },
-  { path: '/analytics', label: 'Analytics',  icon: BarChart3   },
-  { path: '/audit',     label: 'Audit',      icon: FileText    },
-  { path: '/feedback',  label: 'Feedback',   icon: MessageSquare },
-  { path: '/documents', label: 'Documents',  icon: FolderOpen  },
+  { path: '/',           label: 'Analyzer',   icon: Search        },
+  { path: '/evaluation',  label: 'Evaluation', icon: Activity      },
+  { path: '/analytics',  label: 'Analytics',  icon: BarChart3     },
+  { path: '/audit',      label: 'Audit',      icon: FileText      },
+  { path: '/feedback',   label: 'Feedback',   icon: MessageSquare },
+  { path: '/documents',  label: 'Documents',  icon: FolderOpen    },
 ];
 
 const Navbar = () => {

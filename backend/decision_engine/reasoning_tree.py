@@ -186,8 +186,8 @@ class ReasoningEngine:
     def _check_waiting_period(self, query_data: Dict[str, Any], 
                              policy_clauses: List[str]):
         """Check if waiting period requirements are met"""
-        procedure = query_data.get('procedure', '').lower()
-        policy_duration = query_data.get('policy_duration_months', 0)
+        procedure = (query_data.get('procedure') or '').lower()
+        policy_duration = int(query_data.get('policy_duration_months') or 0)
         
         # Define waiting periods for different procedures
         waiting_periods = {
@@ -273,7 +273,7 @@ class ReasoningEngine:
     def _check_policy_status(self, query_data: Dict[str, Any], 
                            policy_clauses: List[str]):
         """Check if policy is active and valid"""
-        policy_duration = query_data.get('policy_duration_months', 0)
+        policy_duration = int(query_data.get('policy_duration_months') or 0)
         
         if policy_duration > 0:
             self.tree.add_step(

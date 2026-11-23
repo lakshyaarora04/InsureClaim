@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Toaster } from 'react-hot-toast';
 import Navbar from './components/Navbar';
 import ClaimAnalyzer from './components/ClaimAnalyzer';
+import EvaluationDashboard from './components/EvaluationDashboard';
 import Analytics from './components/Analytics';
 import AuditReports from './components/AuditReports';
 import FeedbackDashboard from './components/FeedbackDashboard';
@@ -40,11 +41,12 @@ function App() {
         className="max-w-7xl mx-auto px-4 sm:px-6 py-8"
       >
         <Routes>
-          <Route path="/"          element={<ClaimAnalyzer />}    />
-          <Route path="/analytics" element={<Analytics />}         />
-          <Route path="/audit"     element={<AuditReports />}      />
-          <Route path="/feedback"  element={<FeedbackDashboard />} />
-          <Route path="/documents" element={<DocumentManager />}   />
+          <Route path="/"            element={<ClaimAnalyzer />}       />
+          <Route path="/evaluation"  element={<EvaluationDashboard />} />
+          <Route path="/analytics"   element={<Analytics />}           />
+          <Route path="/audit"       element={<AuditReports />}        />
+          <Route path="/feedback"    element={<FeedbackDashboard />}   />
+          <Route path="/documents"   element={<DocumentManager />}      />
         </Routes>
       </motion.main>
     </>

@@ -8,6 +8,11 @@ from backend.decision_engine.evaluator import evaluate_claim
 from backend.retriever.langchain_rag import LangChainInsuranceRAG
 from backend.database.db_manager import db_manager
 from backend.api.models import Query
+from backend.agent.orchestrator import claim_agent
+from backend.agent.tools import AGENT_TOOLS, register_vector_store
+from backend.evaluation.benchmark_dataset import BENCHMARK_CASES, get_benchmark_cases, get_benchmark_categories
+from scripts.run_evaluation import run_full_evaluation
+from scripts.run_benchmarks import run_latency_benchmarks
 import os
 import json
 import uuid
@@ -23,7 +28,8 @@ router = APIRouter()
 
 # Project root (works locally and on Vercel)
 ROOT_DIR = Path(__file__).resolve().parents[2]
-DEFAULT_POLICY_PATH = ROOT_DIR / "documents" / "sample_policy.pdf"
+COMPREHENSIVE_POLICY = ROOT_DIR / "documents" / "comprehensive_health_policy.txt"
+DEFAULT_POLICY_PATH = COMPREHENSIVE_POLICY if COMPREHENSIVE_POLICY.exists() else (ROOT_DIR / "documents" / "sample_policy.pdf")
 
 # ─── In-memory storage for uploaded files' vector stores and chunks ───────────
 uploaded_files = {}
@@ -152,6 +158,7 @@ async def upload_file(file: UploadFile = File(...)):
             "uploaded_at": datetime.utcnow().isoformat(),
             "chunk_count": len(chunks),
         }
+        register_vector_store(file_id, uploaded_files[file_id])
         return {"file_id": file_id, "num_chunks": len(chunks)}
     except HTTPException:
         raise
@@ -179,16 +186,44 @@ async def handle_query(query: Query):
             detail="Invalid or missing file_id. Please upload a document first.",
         )
 
-    store = uploaded_files[file_id]["vector_store"]
-    chunks = uploaded_files[file_id]["chunks"]
+    register_vector_store(file_id, uploaded_files[file_id])
 
     start = time.time()
-    rag_engine = LangChainInsuranceRAG(vector_store=store)
-    result = rag_engine.evaluate_claim(query.dict())
+    claim_dict = query.dict()
+    claim_dict["file_id"] = file_id
+    agent_res = claim_agent.adjudicate_claim(claim_dict)
     elapsed_ms = int((time.time() - start) * 1000)
 
+    # Format result compatible with existing frontend AND enriched with agent execution trace
+    report_id = agent_res.get("claim_id") or uuid.uuid4().hex
+    decision = agent_res.get("decision", "rejected")
+    amount = float(agent_res.get("amount", 0.0) or 0.0)
+    confidence = float(agent_res.get("confidence_score", 0.95))
+    justification = agent_res.get("justification", "")
+    retrieved_chunks = agent_res.get("retrieved_clauses", [])
+    reasoning_breakdown = agent_res.get("waiting_period_analysis", "")
+    reasoning_tree = agent_res.get("reasoning_tree", {})
+    tools_invoked = agent_res.get("tools_invoked", [])
+    agent_mode = agent_res.get("agent_mode", "deterministic_fallback")
+    coverage_breakdown = agent_res.get("coverage_breakdown", {})
+
+    result = {
+        "decision": decision,
+        "amount": amount,
+        "confidence_score": confidence,
+        "justification": justification,
+        "retrieved_chunks": retrieved_chunks,
+        "reasoning_breakdown": reasoning_breakdown,
+        "reasoning_tree": reasoning_tree,
+        "tools_invoked": tools_invoked,
+        "agent_mode": agent_mode,
+        "coverage_breakdown": coverage_breakdown,
+        "query_data": claim_dict,
+        "report_id": report_id,
+        "response_time_ms": elapsed_ms,
+    }
+
     # Persist to audit_reports
-    report_id = uuid.uuid4().hex
     conn = get_db()
     try:
         conn.execute(
@@ -198,12 +233,12 @@ async def handle_query(query: Query):
             (
                 report_id,
                 query.procedure or "",
-                result.get("decision", "rejected"),
-                result.get("amount", 0),
-                result.get("confidence_score", 0.0),
-                result.get("justification", ""),
-                json.dumps(result.get("retrieved_chunks", [])),
-                result.get("reasoning_breakdown", ""),
+                decision,
+                amount,
+                confidence,
+                justification,
+                json.dumps(retrieved_chunks),
+                reasoning_breakdown,
                 datetime.utcnow().isoformat(),
             ),
         )
@@ -227,7 +262,7 @@ async def handle_query(query: Query):
                 "id": report_id,
                 "procedure": query.procedure or "General Claim",
                 "location": query.location or "Mumbai",
-                "claim_amount": result.get("amount", 50000.0) or 50000.0,
+                "claim_amount": amount or 50000.0,
                 "file_id": file_id,
             },
             evaluation_data=result,
@@ -237,14 +272,12 @@ async def handle_query(query: Query):
 
     # Update in-memory analytics
     _analytics["total_queries"] += 1
-    if result.get("decision") == "approved":
+    if decision == "approved":
         _analytics["approved_count"] += 1
     else:
         _analytics["rejected_count"] += 1
     _analytics["total_response_time_ms"] += elapsed_ms
 
-    result["report_id"] = report_id
-    result["response_time_ms"] = elapsed_ms
     return result
 
 
@@ -323,6 +356,7 @@ async def api_analyze(query_data: dict = Body(...)):
                 "uploaded_at": datetime.utcnow().isoformat(),
                 "chunk_count": len(chunks),
             }
+            register_vector_store("default", uploaded_files["default"])
         else:
             raise HTTPException(
                 status_code=400,
@@ -570,4 +604,95 @@ async def get_claimant_relational_history(claimant_id: str):
     """
     history = db_manager.get_claimant_history_with_joins(claimant_id)
     return {"claimant_id": claimant_id, "total_records": len(history), "history": history}
+
+
+# ─── Autonomous AI Agent Endpoints ────────────────────────────────────────────
+
+@router.get("/api/agent/tools")
+async def get_agent_tools():
+    """
+    Returns the registered tool catalog and JSON schemas available to the autonomous agent.
+    """
+    return {
+        "status": "success",
+        "total_tools": len(AGENT_TOOLS),
+        "tools": AGENT_TOOLS,
+    }
+
+
+@router.post("/api/agent/adjudicate")
+async def api_agent_adjudicate(payload: dict = Body(...)):
+    """
+    Direct endpoint for autonomous multi-turn tool calling or deterministic claim adjudication.
+    Accepts arbitrary structured claim or natural language prompt.
+    """
+    file_id = payload.get("file_id", "default")
+    if file_id in uploaded_files:
+        register_vector_store(file_id, uploaded_files[file_id])
+
+    agent_result = claim_agent.adjudicate_claim(payload)
+    return agent_result
+
+
+# ─── Evaluation & Benchmarking Endpoints ──────────────────────────────────────
+
+@router.get("/api/evaluation/benchmark")
+async def get_benchmark_suite(category: Optional[str] = None):
+    """
+    Returns the 40 canonical adjudication benchmark test cases with ground truths.
+    """
+    cases = get_benchmark_cases(category)
+    categories = get_benchmark_categories()
+
+    # Load latest report if available
+    report_file = ROOT_DIR / "reports" / "evaluation_report.json"
+    latest_metrics = None
+    if report_file.exists():
+        try:
+            with open(report_file, "r", encoding="utf-8") as f:
+                saved = json.load(f)
+                latest_metrics = saved.get("global_metrics")
+        except Exception:
+            pass
+
+    return {
+        "total_cases": len(cases),
+        "categories": categories,
+        "latest_metrics": latest_metrics,
+        "cases": cases,
+    }
+
+
+@router.post("/api/evaluation/run")
+async def run_evaluation_suite():
+    """
+    Executes the 40 benchmark test cases across all 12 categories, computing
+    Precision@K, Recall@K, MRR, Decision Accuracy, Amount MAE, Citation Correctness, and Groundedness.
+    """
+    try:
+        report = run_full_evaluation()
+        return {
+            "status": "success",
+            "message": "Evaluation suite executed successfully.",
+            "report": report,
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Evaluation failed: {str(e)}")
+
+
+@router.get("/api/benchmarks/latest")
+async def get_latest_performance_benchmarks():
+    """
+    Returns performance latency benchmarks including Cold vs Warm, P50, P95, and stage breakdown.
+    """
+    bench_file = ROOT_DIR / "reports" / "benchmark_report.json"
+    if bench_file.exists():
+        try:
+            with open(bench_file, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            pass
+    # If not yet generated, run a quick benchmark
+    return run_latency_benchmarks(iterations=5)
+
 

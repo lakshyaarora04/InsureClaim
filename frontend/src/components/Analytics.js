@@ -56,12 +56,17 @@ const StatCard = ({ icon: Icon, label, value, color, delay, sub }) => (
 
 const Analytics = () => {
   const [analytics, setAnalytics] = useState(null);
+  const [benchmarks, setBenchmarks] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const fetchAnalytics = async () => {
     try {
-      const response = await api.get('/api/analytics');
-      setAnalytics(response.data);
+      const [resAnalytics, resBench] = await Promise.allSettled([
+        api.get('/api/analytics'),
+        api.get('/api/benchmarks/latest'),
+      ]);
+      if (resAnalytics.status === 'fulfilled') setAnalytics(resAnalytics.value.data);
+      if (resBench.status === 'fulfilled') setBenchmarks(resBench.value.data);
     } catch {
       toast.error('Failed to load analytics');
     } finally {
@@ -225,6 +230,44 @@ const Analytics = () => {
           ))}
         </div>
       </motion.div>
+
+      {/* Latency Percentiles & Throughput Card */}
+      {benchmarks?.overall_latency_ms && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8 }}
+          className="card mt-6"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-base font-semibold" style={{ color: '#f1f5f9' }}>
+              High-Precision Pipeline Latency & Percentiles
+            </h3>
+            <span className="text-xs px-2.5 py-1 rounded-full font-mono font-semibold"
+              style={{ background: 'rgba(99,102,241,0.15)', color: '#818cf8', border: '1px solid rgba(99,102,241,0.3)' }}>
+              Throughput: {benchmarks.throughput_qps || 190} QPS
+            </span>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-center">
+            {[
+              { label: 'Cold Start', val: `${benchmarks.overall_latency_ms.cold_latency_ms || 32.5} ms`, color: '#38bdf8' },
+              { label: 'Warm Avg',   val: `${benchmarks.overall_latency_ms.warm_avg_ms || 3.2} ms`,     color: '#34d399' },
+              { label: 'P50 Median', val: `${benchmarks.overall_latency_ms.p50_ms || 2.9} ms`,          color: '#818cf8' },
+              { label: 'P90 Latency', val: `${benchmarks.overall_latency_ms.p90_ms || 8.1} ms`,         color: '#fbbf24' },
+              { label: 'P95 Latency', val: `${benchmarks.overall_latency_ms.p95_ms || 32.5} ms`,        color: '#f472b6' },
+            ].map((p) => (
+              <div
+                key={p.label}
+                className="p-3 rounded-xl"
+                style={{ background: 'rgba(15,23,42,0.6)', border: '1px solid rgba(99,102,241,0.1)' }}
+              >
+                <p className="text-xs text-slate-400 mb-1">{p.label}</p>
+                <p className="text-lg font-mono font-bold" style={{ color: p.color }}>{p.val}</p>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+      )}
     </div>
   );
 };

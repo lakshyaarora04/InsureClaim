@@ -17,6 +17,10 @@ import {
   ChevronRight,
   Sparkles,
   AlertTriangle,
+  ChevronDown,
+  ChevronUp,
+  Layers,
+  Terminal,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../apiClient';
@@ -62,6 +66,8 @@ const ClaimAnalyzer = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState(null);
   const [showReasoningTree, setShowReasoningTree] = useState(false);
+  const [showAgentTrace, setShowAgentTrace] = useState(true);
+  const [expandedToolStep, setExpandedToolStep] = useState(null);
 
   const handleAnalyze = async () => {
     if (!query.trim()) {
@@ -305,9 +311,29 @@ const ClaimAnalyzer = () => {
                 </div>
                 <div>
                   <p className="text-xs font-medium mb-1" style={{ color: '#64748b' }}>Decision</p>
-                  <span className={isApproved ? 'status-approved' : 'status-rejected'} style={{ fontSize: '1rem', fontWeight: 700 }}>
-                    {analysisResult.decision?.toUpperCase()}
-                  </span>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className={isApproved ? 'status-approved' : 'status-rejected'} style={{ fontSize: '1rem', fontWeight: 700 }}>
+                      {analysisResult.decision?.toUpperCase()}
+                    </span>
+                    <span
+                      className="text-[11px] px-2.5 py-0.5 rounded-full font-medium inline-flex items-center gap-1"
+                      style={{
+                        background: analysisResult.agent_mode === 'autonomous_tool_calling' ? 'rgba(168,85,247,0.15)' : 'rgba(59,130,246,0.15)',
+                        border: `1px solid ${analysisResult.agent_mode === 'autonomous_tool_calling' ? 'rgba(168,85,247,0.4)' : 'rgba(59,130,246,0.4)'}`,
+                        color: analysisResult.agent_mode === 'autonomous_tool_calling' ? '#c084fc' : '#60a5fa',
+                      }}
+                    >
+                      {analysisResult.agent_mode === 'autonomous_tool_calling' ? (
+                        <>
+                          <Sparkles className="h-3 w-3" /> Autonomous Agent
+                        </>
+                      ) : (
+                        <>
+                          <Shield className="h-3 w-3" /> Deterministic Pipeline
+                        </>
+                      )}
+                    </span>
+                  </div>
                 </div>
               </div>
               <ConfidenceGauge score={analysisResult.confidence_score} />
@@ -401,6 +427,127 @@ const ClaimAnalyzer = () => {
               </div>
             )}
 
+            {/* Coverage & Deductions Breakdown */}
+            {analysisResult.coverage_breakdown && analysisResult.coverage_breakdown.claimed_amount !== undefined && (
+              <div className="mb-6">
+                <div className="flex items-center gap-2 mb-3">
+                  <Shield className="h-4 w-4" style={{ color: '#818cf8' }} />
+                  <h3 className="text-sm font-semibold" style={{ color: '#f1f5f9' }}>Coverage & Deductions Breakdown</h3>
+                </div>
+                <div
+                  className="rounded-xl p-4 text-xs space-y-2"
+                  style={{ background: 'rgba(15,23,42,0.6)', border: '1px solid rgba(99,102,241,0.1)' }}
+                >
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-center mb-2">
+                    <div className="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800">
+                      <p className="text-[11px] text-slate-400 mb-0.5">Claimed</p>
+                      <p className="font-bold text-slate-200">₹{(analysisResult.coverage_breakdown.claimed_amount || 0).toLocaleString('en-IN')}</p>
+                    </div>
+                    <div className="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800">
+                      <p className="text-[11px] text-slate-400 mb-0.5">Sub-Limit Applied</p>
+                      <p className="font-bold text-indigo-400">
+                        {analysisResult.coverage_breakdown.sub_limit_applied ? `₹${analysisResult.coverage_breakdown.sub_limit_applied.toLocaleString('en-IN')}` : 'None'}
+                      </p>
+                    </div>
+                    <div className="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800">
+                      <p className="text-[11px] text-slate-400 mb-0.5">Co-Pay Deducted</p>
+                      <p className="font-bold text-amber-400">
+                        {analysisResult.coverage_breakdown.co_pay_deducted ? `₹${analysisResult.coverage_breakdown.co_pay_deducted.toLocaleString('en-IN')}` : '₹0'}
+                      </p>
+                    </div>
+                    <div className="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800">
+                      <p className="text-[11px] text-slate-400 mb-0.5">Eligible Payable</p>
+                      <p className="font-bold text-emerald-400">₹{(analysisResult.coverage_breakdown.eligible_amount || 0).toLocaleString('en-IN')}</p>
+                    </div>
+                  </div>
+                  {analysisResult.coverage_breakdown.explanation && (
+                    <p className="text-slate-400 leading-relaxed pt-1">
+                      <span className="font-semibold text-slate-300">Explanation: </span>
+                      {analysisResult.coverage_breakdown.explanation}
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Agent Dynamic Tool Calling Trace */}
+            {analysisResult.tools_invoked?.length > 0 && showAgentTrace && (
+              <div className="mb-6">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <Terminal className="h-4 w-4" style={{ color: '#c084fc' }} />
+                    <h3 className="text-sm font-semibold" style={{ color: '#f1f5f9' }}>
+                      Agent Dynamic Tool Calling Trace ({analysisResult.tools_invoked.length} Steps)
+                    </h3>
+                  </div>
+                  <span className="text-[11px] text-slate-400">
+                    Execution Mode: <span className="font-mono text-indigo-300">{analysisResult.agent_mode}</span>
+                  </span>
+                </div>
+
+                <div className="space-y-2">
+                  {analysisResult.tools_invoked.map((toolCall, idx) => {
+                    const isExpanded = expandedToolStep === idx;
+                    return (
+                      <div
+                        key={idx}
+                        className="rounded-xl border transition-all text-xs"
+                        style={{
+                          background: 'rgba(15,23,42,0.7)',
+                          borderColor: 'rgba(99,102,241,0.15)',
+                        }}
+                      >
+                        <div
+                          className="flex items-center justify-between p-3 cursor-pointer select-none"
+                          onClick={() => setExpandedToolStep(isExpanded ? null : idx)}
+                        >
+                          <div className="flex items-center gap-2">
+                            <span
+                              className="w-5 h-5 rounded-full flex items-center justify-center font-mono text-[10px] font-bold"
+                              style={{ background: 'rgba(99,102,241,0.2)', color: '#818cf8' }}
+                            >
+                              {toolCall.step || idx + 1}
+                            </span>
+                            <span className="font-mono font-bold text-indigo-300">{toolCall.tool}</span>
+                            <span className="text-[10px] text-slate-500 font-mono">({toolCall.duration_ms || 1}ms)</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span
+                              className="text-[10px] px-2 py-0.5 rounded font-mono font-semibold"
+                              style={{
+                                background: toolCall.status === 'SUCCESS' ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.15)',
+                                color: toolCall.status === 'SUCCESS' ? '#34d399' : '#f87171',
+                              }}
+                            >
+                              {toolCall.status || 'DONE'}
+                            </span>
+                            {isExpanded ? <ChevronUp className="h-3.5 w-3.5 text-slate-400" /> : <ChevronDown className="h-3.5 w-3.5 text-slate-400" />}
+                          </div>
+                        </div>
+
+                        {isExpanded && (
+                          <div className="px-3 pb-3 pt-1 border-t border-slate-800 space-y-2">
+                            <div>
+                              <p className="text-[10px] font-semibold text-slate-400 mb-1">Inputs:</p>
+                              <pre className="p-2 rounded bg-slate-950/80 text-indigo-200 font-mono text-[11px] overflow-x-auto">
+                                {JSON.stringify(toolCall.input, null, 2)}
+                              </pre>
+                            </div>
+                            <div>
+                              <p className="text-[10px] font-semibold text-slate-400 mb-1">Tool Output:</p>
+                              <pre className="p-2 rounded bg-slate-950/80 text-emerald-300 font-mono text-[11px] overflow-x-auto max-h-48">
+                                {JSON.stringify(toolCall.output, null, 2)}
+                              </pre>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
             <hr className="divider" />
 
             {/* Action buttons */}
@@ -412,6 +559,15 @@ const ClaimAnalyzer = () => {
                 <Eye className="h-4 w-4" />
                 {showReasoningTree ? 'Hide' : 'Show'} Reasoning Tree
               </button>
+              {analysisResult.tools_invoked?.length > 0 && (
+                <button
+                  onClick={() => setShowAgentTrace(!showAgentTrace)}
+                  className="btn-secondary text-sm"
+                >
+                  <Terminal className="h-4 w-4" style={{ color: '#c084fc' }} />
+                  {showAgentTrace ? 'Hide' : 'Show'} Agent Trace ({analysisResult.tools_invoked.length})
+                </button>
+              )}
               <button
                 onClick={() => handleOverride(isApproved ? 'rejected' : 'approved')}
                 className="btn-secondary text-sm"

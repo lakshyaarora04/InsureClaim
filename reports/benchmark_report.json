@@ -1,0 +1,79 @@
+{
+  "timestamp": "2026-11-22T07:04:36.274735",
+  "iterations": 15,
+  "overall_latency_ms": {
+    "samples": 15,
+    "min_ms": 2.05,
+    "max_ms": 32.53,
+    "mean_ms": 5.22,
+    "p50_ms": 2.89,
+    "p90_ms": 8.1,
+    "p95_ms": 32.53,
+    "p99_ms": 32.53,
+    "cold_latency_ms": 32.53,
+    "warm_avg_ms": 3.27
+  },
+  "stage_latency_breakdown_ms": {
+    "vector_search": {
+      "samples": 15,
+      "min_ms": 0.42,
+      "max_ms": 28.1,
+      "mean_ms": 2.33,
+      "p50_ms": 0.5,
+      "p90_ms": 0.56,
+      "p95_ms": 28.1,
+      "p99_ms": 28.1,
+      "cold_latency_ms": 28.1,
+      "warm_avg_ms": 0.49
+    },
+    "claim_history_lookup": {
+      "samples": 15,
+      "min_ms": 0.3,
+      "max_ms": 5.85,
+      "mean_ms": 0.82,
+      "p50_ms": 0.35,
+      "p90_ms": 1.33,
+      "p95_ms": 5.85,
+      "p99_ms": 5.85,
+      "cold_latency_ms": 1.33,
+      "warm_avg_ms": 0.79
+    },
+    "waiting_period_rules": {
+      "samples": 15,
+      "min_ms": 0.0,
+      "max_ms": 0.02,
+      "mean_ms": 0.01,
+      "p50_ms": 0.01,
+      "p90_ms": 0.01,
+      "p95_ms": 0.02,
+      "p99_ms": 0.02,
+      "cold_latency_ms": 0.01,
+      "warm_avg_ms": 0.01
+    },
+    "coverage_calculation": {
+      "samples": 15,
+      "min_ms": 0.01,
+      "max_ms": 0.03,
+      "mean_ms": 0.01,
+      "p50_ms": 0.01,
+      "p90_ms": 0.01,
+      "p95_ms": 0.03,
+      "p99_ms": 0.03,
+      "cold_latency_ms": 0.01,
+      "warm_avg_ms": 0.01
+    },
+    "audit_persistence": {
+      "samples": 15,
+      "min_ms": 1.26,
+      "max_ms": 3.74,
+      "mean_ms": 2.01,
+      "p50_ms": 1.62,
+      "p90_ms": 3.12,
+      "p95_ms": 3.74,
+      "p99_ms": 3.74,
+      "cold_latency_ms": 3.03,
+      "warm_avg_ms": 1.94
+    }
+  },
+  "throughput_qps": 191.57
+}

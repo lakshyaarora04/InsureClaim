@@ -1,0 +1,57 @@
+INSURECLAIMS COMPREHENSIVE HEALTH INSURANCE POLICY CONTRACT
+Policy Schedule and Terms & Conditions
+IRDAI Registration: UIN-INCL-HEALTH-2024-V2
+
+SECTION 1: INPATIENT HOSPITALIZATION COVERAGE
+1.1 Medical Expenses Coverage: The company shall indemnify the insured person for reasonable and customary medical expenses incurred during medically necessary inpatient hospitalization exceeding 24 continuous hours.
+1.2 Covered Inpatient Treatments: Coverage includes emergency appendectomy, appendicitis surgery, gall bladder removal (cholecystectomy), inpatient treatment for severe dengue fever, acute gastroenteritis, bronchitis, kidney stone lithotripsy, renal calculi management, fracture reduction, cardiac stenting, bypass surgery, and polytrauma ICU intensive care.
+1.3 Room Rent and Nursing Charges: Normal hospital room rent, nursing charges, intensive care unit (ICU) charges, operating theater fees, surgeon and anesthesia consultations are covered within the sum insured.
+
+SECTION 2: DAYCARE PROCEDURES
+2.1 Daycare Surgical Treatments: Medically necessary surgical operations and procedures undertaken under general or local anesthesia in a hospital/daycare center requiring less than 24 hours hospitalization due to technological advancements are covered.
+2.2 Covered Daycare List: Includes daycare laparoscopic appendectomy, shockwave lithotripsy for renal calculi, dialysis for renal failure, tympanoplasty, and cataract surgery.
+
+SECTION 3: SPECIFIC DISEASE WAITING PERIOD (24 MONTHS)
+3.1 Two-Year Exclusion Window: A mandatory waiting period of twenty-four (24) continuous months from the initial policy inception date applies to the following specified illnesses, surgical procedures, and medical conditions:
+  (a) Cataract surgery and lens replacement (unilateral and bilateral).
+  (b) Inguinal, ventral, umbilical, and incisional hernia repair with or without mesh.
+  (c) Total knee replacement, partial knee replacement, and elective joint replacements for osteoarthritis.
+  (d) Hydrocele, varicocele, and spermatocoele surgeries.
+  (e) Sinusitis, chronic rhinosinusitis, and Functional Endoscopic Sinus Surgery (FESS).
+  (f) Tonsillectomy, adenoidectomy, and benign ENT surgeries.
+  (g) Cholecystectomy for gall bladder stones, renal calculi, and kidney stone management.
+  (h) Piles, hemorrhoids, anal fistula, and anal fissure procedures.
+3.2 Waiting Period Ineligibility: Any claim submitted for the above conditions prior to the completion of 24 months continuous policy coverage shall be strictly rejected under Clause 3.1.
+
+SECTION 4: INITIAL WAITING PERIOD (30 DAYS) AND ACCIDENT / EMERGENCY EXEMPTIONS
+4.1 Initial 30-Day Waiting Period: Expenses related to the treatment of any illness or non-accidental medical condition within thirty (30) days from the first policy inception date are strictly excluded from coverage.
+4.2 Accidental Injury Exception: The initial 30-day waiting period shall NOT apply to bodily injuries caused solely and directly by accidental, external, violent, and visible means. Road traffic accident fractures, accidental head trauma requiring emergency ICU care, accidental bone fractures, and trauma surgeries are covered from Day 1 of policy inception.
+4.3 Life-Threatening Emergency Waiver: Acute life-threatening medical emergencies, including emergent peritonitis resulting from acute appendicular perforation or ruptured appendix, are exempt from initial waiting period restrictions.
+
+SECTION 5: PRE-EXISTING DISEASE (PED) WAITING PERIOD (36 MONTHS)
+5.1 Pre-Existing Disease Waiting Schedule: Pre-existing diseases (PED) and medical conditions declared at the time of proposal or diagnosed prior to policy inception shall have a mandatory waiting period of thirty-six (36) months of continuous coverage.
+5.2 Covered Pre-Existing Conditions: Includes Type 2 diabetes mellitus, diabetic nephropathy, declared chronic hypertension, stroke, hypertensive crisis, chronic bronchial asthma, chronic obstructive pulmonary disease (COPD), and chronic ischemic heart diseases.
+5.3 Exclusion of PED Claims: Medical expenses directly or indirectly arising from pre-existing conditions prior to 36 months tenure are non-payable.
+
+SECTION 6: PROCEDURAL SUB-LIMITS AND STATUTORY MAXIMUM PAYOUT CAPS
+6.1 Sub-Limit Schedule: Regardless of total hospital invoice submitted, the maximum indemnity payable for specific procedures is subject to statutory caps:
+  (a) Cataract Surgery: Maximum ₹40,000 per eye (unilateral cataract capped at ₹40,000; bilateral cataract capped at ₹80,000).
+  (b) Inguinal / Ventral Hernia Surgery: Maximum ₹50,000 per procedure.
+  (c) Knee Replacement / Joint Replacement Surgery: Maximum ₹80,000 per joint.
+  (d) Accidental Dental Reconstruction: Maximum ₹15,000 per policy year for accidental jaw or tooth trauma.
+6.2 Excess Deductions: Any claimed amount exceeding the applicable sub-limit cap will be disallowed and deducted as insured excess.
+
+SECTION 7: PERMANENT GENERAL POLICY EXCLUSIONS
+7.1 Cosmetic and Aesthetic Surgeries: Plastic surgery, elective cosmetic surgery, rhinoplasty, aesthetic nasal reshaping, and liposuction performed for appearance improvement without traumatic reconstructive necessity are permanently excluded.
+7.2 Routine Dental Care: Dental treatments, fillings, root canal therapy, tooth extractions, and crown placements not arising from direct accidental trauma are excluded under Clause 7.2.
+7.3 Experimental and Unproven Treatments: Cellular therapies, stem-cell injections, pharmacological clinical trials, and experimental treatments lacking established clinical protocols are excluded from coverage.
+7.4 Weight Reduction and Obesity: Elective bariatric surgery, gastric sleeve, or aesthetic weight reduction treatments are excluded.
+
+SECTION 8: CO-PAYMENT AND DEDUCTIBLES
+8.1 Co-Payment Clause: Where specified in the policy schedule, a co-payment of 10% to 20% shall be deducted from the eligible claim amount. Senior citizen policies carry a mandatory 20% co-payment. Tier-2 hospital treatments carry a 15% zone co-payment.
+
+SECTION 9: SUM INSURED EXHAUSTION
+9.1 Policy Sum Insured Limit: The total reimbursement payable across all claims during the policy year shall not exceed the remaining sum insured balance (standard coverage limit ₹5,00,000).
+
+SECTION 10: DUPLICATE CLAIMS AND AUDIT INTEGRITY
+10.1 Prohibition of Duplicate Claims: Submission of duplicate or resubmitted claims for the same clinical episode, procedure, and claimant is prohibited under fraud prevention rules and shall result in immediate rejection.
